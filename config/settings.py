@@ -34,6 +34,7 @@ CUSTOM_APPS = [
     "users.apps.UsersConfig",
     "projects.apps.ProjectsConfig",
     "common.apps.CommonConfig",
+    "categories.apps.CategoriesConfig",
 ]
 
 SYSTEM_APPS = [
