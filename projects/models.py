@@ -6,6 +6,11 @@ class Project(CommonModel):
 
     """Model Definition for Project"""
 
+    class ApprovalKindChoices(models.TextChoices):
+        APPROVAL = "approval", "승인"
+        DISAPPROVAL = "disapproval", "미승인"
+        UNDER_REVIEW = "under_review", "검토중"
+
     title = models.CharField(
         max_length=200,
         default="",
@@ -33,7 +38,11 @@ class Project(CommonModel):
         on_delete=models.SET_NULL,
         related_name="projects",
     )
-    is_approved = models.BooleanField(default=False)
+    is_approved = models.CharField(
+        max_length=15,
+        choices=ApprovalKindChoices.choices,
+        default=ApprovalKindChoices.UNDER_REVIEW,
+    )
 
     class Meta:
         ordering = ["-created_at"]
