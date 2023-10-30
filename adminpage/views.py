@@ -7,6 +7,8 @@ from projects.serializers import TinyProjectSerializer
 
 
 class AdminPage(APIView):
+    """모든 project를 보여줍니다"""
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
@@ -20,6 +22,8 @@ class AdminPage(APIView):
 
 
 class UnderReview(APIView):
+    """검토중인 project를 보여줍니다"""
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):

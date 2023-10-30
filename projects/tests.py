@@ -108,11 +108,11 @@ class TestProjectEditorDetail(APITestCase):
             self.new_project_title,
         )
 
-    def test_put_project(self):
+    def test_patch_project(self):
         self.client.force_login(
             self.user,
         )
-        response = self.client.put(
+        response = self.client.patch(
             "/api/v1/projects/project-editor/1",
             data={"is_approved": "approval"},
         )

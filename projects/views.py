@@ -65,7 +65,7 @@ class ProjectEditorDetail(APIView):
         )
         return Response(serializer.data)
 
-    def put(self, request, pk):
+    def patch(self, request, pk):
         """관리자는 is_approved 만 변경 가능합니다."""
 
         project = self.get_object(pk)
@@ -78,3 +78,7 @@ class ProjectEditorDetail(APIView):
             return Response({"is_approved": project.is_approved})
         else:
             raise ParseError("is_approved 항목만 수정 가능합니다.")
+
+
+class ProjectList(APIView):
+    pass
