@@ -81,4 +81,9 @@ class ProjectEditorDetail(APIView):
 
 
 class ProjectList(APIView):
-    pass
+    def get(self, request):
+        # "under_review"인 프로젝트만 필터링
+        projects = Project.objects.filter(is_approved="approval")
+
+        serializer = serializers.PublicProjectSerializer(projects, many=True)
+        return Response(serializer.data)

@@ -33,3 +33,19 @@ class TinyProjectSerializer(serializers.ModelSerializer):
             "category",
             "is_approved",
         )
+
+
+class PublicProjectSerializer(serializers.ModelSerializer):
+    user = TinyUserSerializer(read_only=True)
+    category = TinyCategorySerializer(read_only=True)
+
+    class Meta:
+        model = Project
+        fields = (
+            "pk",
+            "title",
+            "photo",
+            "description",
+            "user",
+            "category",
+        )
