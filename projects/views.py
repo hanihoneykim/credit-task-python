@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.db import transaction
 from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
@@ -46,3 +46,18 @@ class ProjectEditor(APIView):
                 raise ParseError("잘못된 요청입니다.")
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+
+class ProjectEditorDetail(APIView):
+    """관리자만 접근 가능한 신청된 프로젝트 detail view"""
+
+    permission_classes = [IsAdminUser]
+
+    def get_object(self, pk):
+        pass
+
+    def get(self, request, pk):
+        pass
+
+    def put(self, request, pk):
+        pass
