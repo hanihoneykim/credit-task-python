@@ -33,6 +33,7 @@ class Project(CommonModel):
         on_delete=models.SET_NULL,
         related_name="projects",
     )
+    is_approved = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-created_at"]
