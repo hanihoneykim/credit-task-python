@@ -7,6 +7,7 @@ from categories.serializers import TinyCategorySerializer
 class ProjectEditorSerializer(serializers.ModelSerializer):
     user = TinyUserSerializer(read_only=True)
     category = TinyCategorySerializer(read_only=True)
+    is_approved = serializers.CharField(source="get_is_approved_display")
 
     class Meta:
         model = Project

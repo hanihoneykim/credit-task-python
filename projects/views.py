@@ -11,6 +11,7 @@ from rest_framework.exceptions import (
 )
 from . import serializers
 from categories.models import Category
+from .models import Project
 
 
 class ProjectEditor(APIView):
@@ -29,9 +30,6 @@ class ProjectEditor(APIView):
             except Category.DoesNotExist:
                 raise ParseError("카테고리를 찾을 수 없습니다.")
             try:
-                # is_approved는 false로 자동 생성
-                # is_approved = request.data.get("is_approved", False)
-
                 with transaction.atomic():
                     project = serializer.save(
                         user=request.user,
@@ -54,10 +52,27 @@ class ProjectEditorDetail(APIView):
     permission_classes = [IsAdminUser]
 
     def get_object(self, pk):
-        pass
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            raise NotFound
 
     def get(self, request, pk):
-        pass
+        project = self.get_object(pk)
+        serializer = serializers.ProjectEditorSerializer(
+            project,
+            context={"request": request},
+        )
+        return Response(serializer.data)
 
     def put(self, request, pk):
-        pass
+        project = self.get_object(pk)
+
+        # is_approved 필드만 수정
+        is_approved = request.data.get("is_approved", None)
+        if is_approved:
+            project.is_approved = is_approved
+            project.save(update_fields=["is_approved"])
+            return Response({"is_approved": project.is_approved})
+        else:
+            raise ParseError("is_approved 항목만 수정 가능합니다.")
