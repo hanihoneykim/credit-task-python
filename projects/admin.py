@@ -3,10 +3,12 @@ from .models import Project
 
 
 @admin.register(Project)
-class PhotoAdmin(admin.ModelAdmin):
+class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "user",
+        "category",
+        "is_approved",
     )
 
     search_fields = (
