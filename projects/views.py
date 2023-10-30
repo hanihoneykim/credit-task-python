@@ -66,6 +66,8 @@ class ProjectEditorDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
+        """관리자는 is_approved 만 변경 가능합니다."""
+
         project = self.get_object(pk)
 
         # is_approved 필드만 수정
