@@ -7,7 +7,7 @@ from rest_framework.exceptions import ParseError, NotFound
 from rest_framework.permissions import IsAuthenticated
 from projects.serializers import PublicProjectSerializer, ProjectEditorSerializer
 from projects.models import Project
-from .serializers import PublicUserSerializer
+from .serializers import PublicUserSerializer, PrivateUserSerializer
 from .models import User
 
 
@@ -36,3 +36,37 @@ class MyProjects(APIView):
         my_projects = Project.objects.filter(user=user)
         serializer = ProjectEditorSerializer(my_projects, many=True)
         return Response(serializer.data)
+
+
+class Users(APIView):
+    def post(self, request):
+        """유저 생성"""
+        password = request.data.get("password")
+        if not password:
+            raise ParseError
+        serializer = PrivateUserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            user.set_password(password)
+            user.save()
+            serializer = PrivateUserSerializer(user)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
+class ChangePassword(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        if not old_password or not new_password:
+            raise ParseError
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            raise ParseError

@@ -17,14 +17,14 @@ class TestProjectEditor(APITestCase):
 
     def test_create_project(self):
         new_project_title = "Test Project"
-        new_project_photo = "https://i.imgur.com/M1F6LC4.png"
+        new_project_photo_url = "https://i.imgur.com/M1F6LC4.png"
         new_project_description = "this is test project"
 
         response = self.client.post(
             "/api/v1/projects/project-editor",
             data={
                 "title": new_project_title,
-                "photo": new_project_photo,
+                "photo_url": new_project_photo_url,
                 "description": new_project_description,
                 "category": self.category.pk,
             },
@@ -42,7 +42,7 @@ class TestProjectEditor(APITestCase):
             "/api/v1/projects/project-editor",
             data={
                 "title": new_project_title,
-                "photo": new_project_photo,
+                "photo": new_project_photo_url,
                 "description": new_project_description,
                 "category": self.category.pk,
             },

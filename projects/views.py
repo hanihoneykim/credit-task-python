@@ -98,10 +98,10 @@ class S3Uploads(APIView):
             user = request.user  # 현재 로그인한 사용자를 가져옵니다.
             title = request.data.get("title")
             description = request.data.get("description")
-            category_id = request.data.get("category")
+            category_id = request.data.get("category")  # 카테고리 id 갸져옴
 
             try:
-                category = Category.objects.get(pk=category_id)  # 카테고리를 찾습니다.
+                category = Category.objects.get(pk=category_id)  # 카테고리를 찾기
             except Category.DoesNotExist:
                 return Response({"ERROR": "Category not found"}, status=HTTP_400_BAD_REQUEST)
 
