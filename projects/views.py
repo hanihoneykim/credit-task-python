@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.db import transaction
-from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.response import Response
 from rest_framework.exceptions import (
     NotFound,
@@ -12,6 +12,8 @@ from rest_framework.exceptions import (
 from . import serializers
 from categories.models import Category
 from .models import Project
+from users.models import User
+import boto3
 
 
 class ProjectEditor(APIView):
@@ -87,3 +89,48 @@ class ProjectList(APIView):
 
         serializer = serializers.PublicProjectSerializer(projects, many=True)
         return Response(serializer.data)
+
+
+class S3Uploads(APIView):
+    def post(self, request):
+        try:
+            photo = request.FILES.get("photo")
+            user_name = request.data.get("user")  # 사용자 이름 또는 식별자를 가져옵니다.
+
+            try:
+                user = User.objects.get(username=user_name)  # 사용자를 찾습니다.
+            except User.DoesNotExist:
+                return Response({"ERROR": "User not found"}, status=HTTP_400_BAD_REQUEST)
+
+            title = request.data.get("title")
+            description = request.data.get("description")
+            category_id = request.data.get("category")  # 카테고리 식별자를 가져옵니다.
+
+            try:
+                category = Category.objects.get(pk=category_id)  # 카테고리를 찾습니다.
+            except Category.DoesNotExist:
+                return Response({"ERROR": "Category not found"}, status=HTTP_400_BAD_REQUEST)
+
+            s3r = boto3.resource(
+                "s3",
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
+            key = f"{user}/{photo.name}"
+            s3r.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(
+                Key=key, Body=photo, ContentType="image/jpeg"
+            )
+            photo_url = f"{settings.AWS_S3_CUSTOM_DOMAIN}/{key}"
+
+            project = Project.objects.create(
+                title=title,
+                description=description,
+                user=user,
+                photo_url=photo_url,
+                category=category,  # Category 모델의 인스턴스를 할당합니다.
+            )
+
+            # 처리 완료 후 응답
+            return Response({"MESSAGE": "SUCCESS"}, status=HTTP_200_OK)
+        except Exception as e:
+            return Response({"ERROR": str(e)}, status=HTTP_400_BAD_REQUEST)

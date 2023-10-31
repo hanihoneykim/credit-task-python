@@ -12,7 +12,7 @@ class ProjectEditorSerializer(serializers.ModelSerializer):
         model = Project
         fields = (
             "title",
-            "photo",
+            "photo_url",
             "description",
             "user",
             "category",
@@ -44,7 +44,7 @@ class PublicProjectSerializer(serializers.ModelSerializer):
         fields = (
             "pk",
             "title",
-            "photo",
+            "photo_url",
             "description",
             "user",
             "category",
