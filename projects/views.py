@@ -95,16 +95,10 @@ class S3Uploads(APIView):
     def post(self, request):
         try:
             photo = request.FILES.get("photo")
-            user_name = request.data.get("user")  # 사용자 이름 또는 식별자를 가져옵니다.
-
-            try:
-                user = User.objects.get(username=user_name)  # 사용자를 찾습니다.
-            except User.DoesNotExist:
-                return Response({"ERROR": "User not found"}, status=HTTP_400_BAD_REQUEST)
-
+            user = request.user  # 현재 로그인한 사용자를 가져옵니다.
             title = request.data.get("title")
             description = request.data.get("description")
-            category_id = request.data.get("category")  # 카테고리 식별자를 가져옵니다.
+            category_id = request.data.get("category")
 
             try:
                 category = Category.objects.get(pk=category_id)  # 카테고리를 찾습니다.
