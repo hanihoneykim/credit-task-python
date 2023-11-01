@@ -9,6 +9,7 @@ from projects.serializers import PublicProjectSerializer, ProjectEditorSerialize
 from projects.models import Project
 from .serializers import PublicUserSerializer, PrivateUserSerializer
 from .models import User
+import jwt
 
 
 class PublicUser(APIView):
@@ -119,3 +120,25 @@ class Me(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+
+class JWTLogIn(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if not username or not password:
+            raise ParseError
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+        if user:
+            token = jwt.encode(
+                {"pk": user.pk},
+                settings.SECRET_KEY,
+                algorithm="HS256",
+            )
+            return Response({"token": token})
+        else:
+            return Response({"error": "잘못된 비밀번호 입니다."})
